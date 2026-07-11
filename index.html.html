@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Mobile Accessories Store (Buyer View)</title>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 20px; background: #f4f6f9; color: #333; }
+    .store-container { max-width: 900px; margin: 0 auto; }
+    .store-header { background: linear-gradient(135deg, #ff5722, #ff7043); color: white; padding: 25px; border-radius: 12px; text-align: center; box-shadow: 0 4px 15px rgba(255,87,34,0.2); margin-bottom: 25px; }
+    .store-header h1 { margin: 0 0 8px 0; font-size: 28px; }
+    .store-header p { margin: 0; opacity: 0.9; font-size: 14px; }
+    
+    select { padding: 10px 15px; border-radius: 6px; border: 1px solid #ddd; font-size: 14px; margin-bottom: 20px; width: 250px; background: white; cursor: pointer; }
+    
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
+    .product-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 3px 10px rgba(0,0,0,0.06); display: flex; flex-direction: column; transition: transform 0.2s; border: 1px solid #eaeaea; }
+    .product-card:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+    
+    .img-box { width: 100%; height: 180px; background: #fafafa; border-bottom: 1px solid #eee; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+    .img-box img { width: 100%; height: 100%; object-fit: cover; }
+    
+    .details { padding: 15px; flex: 1; display: flex; flex-direction: column; }
+    .brand { font-size: 11px; text-transform: uppercase; color: #888; font-weight: bold; letter-spacing: 0.5px; }
+    .title { font-size: 16px; font-weight: bold; margin: 4px 0 8px 0; color: #222; line-height: 1.3; }
+    
+    .price-box { margin-bottom: 10px; }
+    .old-price { text-decoration: line-through; color: #999; font-size: 13px; margin-right: 8px; }
+    .new-price { color: #d32f2f; font-weight: bold; font-size: 18px; }
+    
+    .meta-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 12px; }
+    .tag { font-size: 10px; padding: 2px 6px; border-radius: 4px; color: white; font-weight: 500; }
+    .tag.cat { background: #0088cc; }
+    .tag.warranty { background: #7b1fa2; }
+    .tag.stock { background: #4caf50; }
+    .tag.out { background: #e53935; }
+    
+    .desc { font-size: 12px; color: #666; line-height: 1.4; background: #f9f9f9; padding: 8px; border-radius: 6px; margin-bottom: 15px; flex: 1; }
+    
+    /* Order Buttons for Buyer */
+    .btn-buy { background: #25d366; color: white; border: none; padding: 10px; width: 100%; border-radius: 6px; font-weight: bold; cursor: pointer; text-align: center; text-decoration: none; font-size: 13px; display: inline-block; box-sizing: border-box; box-shadow: 0 3px 6px rgba(37,211,102,0.2); }
+    .btn-buy:hover { background: #1ebd58; }
+  </style>
+</head>
+<body>
+
+  <div class="store-container">
+    <div class="store-header">
+      <h1>📱 Online Mobile Accessories Store</h1>
+      <p>Premium Quality Accessories at Best Prices • Select items and contact us to buy!</p>
+    </div>
+
+    <!-- Category Filter for Buyer -->
+    <select id="buyerFilter"><option value="all">🛍️ Show All Categories</option></select>
+
+    <!-- Buyer Grid -->
+    <div class="grid" id="buyerGrid"></div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const buyerGrid = document.getElementById("buyerGrid");
+      const buyerFilter = document.getElementById("buyerFilter");
+
+      const products = JSON.parse(localStorage.getItem("myAdvancedProducts")) || [];
+      const customCategories = JSON.parse(localStorage.getItem("myCustomCategories")) || [];
+
+      // फिल्टर सेटअप
+      customCategories.forEach(cat => {
+        const opt = document.createElement("option");
+        opt.value = cat;
+        opt.textContent = `📁 ${cat}`;
+        buyerFilter.appendChild(opt);
+      });
+
+      function displayProducts(items) {
+        buyerGrid.innerHTML = "";
+        if (items.length === 0) {
+          buyerGrid.innerHTML = `<p style="grid-column: 1/-1; text-align:center; color:#999; padding:40px;">No items available in store right now.</p>`;
+          return;
+        }
+
+        items.forEach(item => {
+          const card = document.createElement("div");
+          card.className = "product-card";
+
+          const imgUrl = item.image ? item.image : "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 24 24' fill='%23ccc'><path d='M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z'/></svg>";
+          const stockQty = parseInt(item.stock) || 0;
+          const stockTag = stockQty > 0 ? `<span class="tag stock">Available</span>` : `<span class="tag out">Out of Stock</span>`;
+
+          let priceHTML = `<span class="new-price">${item.price}</span>`;
+          if (item.specialPrice) {
+            priceHTML = `<span class="old-price">${item.price}</span><span class="new-price">${item.specialPrice}</span>`;
+          }
+
+          // यहाँ आफ्नो ह्वाट्सएप नम्बर हाल्नुहोस् (जस्तै: 97798XXXXXXXX)
+          const whatsappNumber = "9779800000000"; 
+          const whatsappMessage = encodeURIComponent(`Hi, I want to buy:\nProduct: ${item.name}\nBrand: ${item.brand}\nPrice: ${item.specialPrice || item.price}`);
+          const whatsappLink = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`;
+
+          card.innerHTML = `
+            <div class="img-box"><img src="${imgUrl}" alt="product"></div>
+            <div class="details">
+              <span class="brand">${item.brand}</span>
+              <div class="title">${item.name}</div>
+              <div class="meta-tags">
+                <span class="tag cat">${item.category}</span>
+                ${stockTag}
+                ${item.warranty ? `<span class="tag warranty">🛠️ ${item.warranty}</span>` : ''}
+              </div>
+              <div class="price-box">${priceHTML}</div>
+              ${item.description ? `<div class="desc">${item.description}</div>` : '<div class="desc">No details provided.</div>'}
+              <a href="${whatsappLink}" target="_blank" class="btn-buy">💬 Order via WhatsApp</a>
+            </div>
+          `;
+          buyerGrid.appendChild(card);
+        });
+      }
+
+      buyerFilter.addEventListener("change", (e) => {
+        const val = e.target.value;
+        displayProducts(val === "all" ? products : products.filter(p => p.category === val));
+      });
+
+      displayProducts(products);
+    });
+  </script>
+</body>
+</html>
